@@ -1,9 +1,26 @@
 from setuptools import setup, Extension, find_packages
 import os
+import sys
 import numpy as np
 
-# Find macOS SDK path
-sdk_path = os.popen('xcrun --show-sdk-path').read().strip()
+# Platform-specific configuration
+is_macos = sys.platform == 'darwin'
+extra_compile_args = ['-std=c++11', '-g', '-Wno-unused-function', '-Wno-deprecated-declarations']
+extra_link_args = []
+
+# macOS-specific settings
+if is_macos:
+    # Find macOS SDK path
+    sdk_path = os.popen('xcrun --show-sdk-path').read().strip()
+    if sdk_path:
+        extra_compile_args.append(f'-isysroot{sdk_path}')
+    
+    # Add macOS frameworks
+    extra_link_args.extend([
+        '-framework', 'CoreFoundation',
+        '-framework', 'CoreVideo',
+        '-framework', 'CoreMedia'
+    ])
 
 # Define extension module
 bmcapture_c_module = Extension(
@@ -18,18 +35,8 @@ bmcapture_c_module = Extension(
         'libs/DeckLink/include',
         '.'
     ],
-    extra_compile_args=[
-        '-std=c++11',
-        '-g',
-        '-Wno-unused-function',
-        '-Wno-deprecated-declarations',
-        f'-isysroot{sdk_path}'
-    ],
-    extra_link_args=[
-        '-framework', 'CoreFoundation',
-        '-framework', 'CoreVideo',
-        '-framework', 'CoreMedia'
-    ],
+    extra_compile_args=extra_compile_args,
+    extra_link_args=extra_link_args,
     language='c++'
 )
 
