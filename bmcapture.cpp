@@ -180,6 +180,7 @@ struct BMCaptureDevice {
     BMCaptureDevice() = default;
 
     ~BMCaptureDevice() {
+        fprintf(stderr, "E.1\n");
         // Channels should be deleted by the caller
         if (input) {
             input->StopStreams();
@@ -188,15 +189,20 @@ struct BMCaptureDevice {
             input->Release();
             input = nullptr;
         }
-        
+        fprintf(stderr, "E.2\n");
         // Clean up callback object
         delete callback;
         callback = nullptr;
-        
-        if (device) {
-            device->Release();
-            device = nullptr;
-        }
+        fprintf(stderr, "E.3\n");
+
+        // if (device) {
+        //     fprintf(stderr, "E.3.1\n");
+        //     device->Release();
+        //     fprintf(stderr, "E.3.2\n");
+        //     device = nullptr;
+        //     fprintf(stderr, "E.3.3\n");
+        // }
+        fprintf(stderr, "E.4\n");
     }
 };
 
@@ -1201,10 +1207,11 @@ void bm_stop_capture(BMContext* context, BMCaptureDevice* device) {
 }
 
 void bm_destroy_device(BMContext* context, BMCaptureDevice* device) {
+    fprintf(stderr, "A: %x\n", device);
     if (context == nullptr || device == nullptr) {
         return;
     }
-
+    fprintf(stderr, "B\n");
     // Clean up all channels
     for (auto* channel : device->channels) {
         if (channel->capturing) {
@@ -1212,14 +1219,16 @@ void bm_destroy_device(BMContext* context, BMCaptureDevice* device) {
         }
         delete channel;
     }
+    fprintf(stderr, "C\n");
     device->channels.clear();
-
+    fprintf(stderr, "D\n");
     // Clean up the device
     if (device->device != nullptr) {
         device->device->Release();
     }
-
+    fprintf(stderr, "E\n");
     delete device;
+    fprintf(stderr, "F\n");
 }
 
 // Multi-channel API implementation
