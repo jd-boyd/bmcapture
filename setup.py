@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 import os
 import numpy as np
 
@@ -6,11 +6,11 @@ import numpy as np
 sdk_path = os.popen('xcrun --show-sdk-path').read().strip()
 
 # Define extension module
-bmcapture_module = Extension(
-    'bmcapture',
+bmcapture_c_module = Extension(
+    'bmcapture_c',
     sources=[
-        'python/bmcapture_python.cpp',
-        'bmcapture.cpp',
+        'src/bmcapture_python.cpp',
+        'src/bmcapture.cpp',
         'libs/DeckLink/src/DeckLinkAPIDispatch.cpp'
     ],
     include_dirs=[
@@ -34,8 +34,5 @@ bmcapture_module = Extension(
 )
 
 setup(
-    name='bmcapture',
-    version='0.1.0',
-    description='Python wrapper for BlackMagic capture devices',
-    ext_modules=[bmcapture_module],
+    ext_modules=[bmcapture_c_module],
 )

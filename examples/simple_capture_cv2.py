@@ -4,6 +4,7 @@ This example captures frames from a Blackmagic device and saves them as PNG file
 """
 
 import bmcapture
+from bmcapture import utils as bm_utils
 import numpy as np
 import cv2
 import time

@@ -3,7 +3,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
-#include "../bmcapture.h"
+#include "bmcapture.h"
 
 // Global context for the library
 static BMContext* g_context = NULL;
@@ -77,7 +77,7 @@ static PyMethodDef BMCapture_methods[] = {
 // Type definition for BMCapture
 static PyTypeObject BMCaptureType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "bmcapture.BMCapture",
+    .tp_name = "bmcapture_c.BMCapture",
     .tp_doc = "BlackMagic Capture Device",
     .tp_basicsize = sizeof(BMCaptureObject),
     .tp_itemsize = 0,
@@ -112,7 +112,7 @@ static PyMethodDef BMChannel_methods[] = {
 // Initialize it here
 static PyTypeObject BMChannelType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "bmcapture.BMChannel",
+    .tp_name = "bmcapture_c.BMChannel",
     .tp_doc = "BlackMagic Capture Channel",
     .tp_basicsize = sizeof(BMChannelObject),
     .tp_itemsize = 0,
@@ -315,7 +315,7 @@ static PyObject* BMCapture_shutdown(PyObject* self, PyObject* args) {
         // This is important to prevent crashes during interpreter shutdown
         // Note: In a real-world implementation, you might need to track all active
         // devices/channels and explicitly close them here
-        
+
         // Now free the context
         bm_free_context(g_context);
         g_context = NULL;
@@ -643,7 +643,7 @@ static PyObject* BMCapture_create_channel(BMCaptureObject* self, PyObject* args,
                                     &port_index, &width, &height, &framerate, &low_latency)) {
         return NULL;
     }
-    
+
     if (!self->device) {
         PyErr_SetString(PyExc_RuntimeError, "Device not initialized or has been closed");
         return NULL;
@@ -901,8 +901,8 @@ static PyMethodDef module_methods[] = {
 // Module definition
 static struct PyModuleDef bmcapture_module = {
     PyModuleDef_HEAD_INIT,
-    "bmcapture",
-    "Python interface for BlackMagic capture devices",
+    "bmcapture_c",
+    "Python C API interface for BlackMagic capture devices",
     -1,
     module_methods
 };
@@ -917,7 +917,7 @@ static void bmcapture_module_free(void) {
 }
 
 // Module initialization
-PyMODINIT_FUNC PyInit_bmcapture(void) {
+PyMODINIT_FUNC PyInit_bmcapture_c(void) {
     PyObject* m;
 
     // Initialize NumPy array API
@@ -959,7 +959,7 @@ PyMODINIT_FUNC PyInit_bmcapture(void) {
     if (g_context == NULL) {
         g_context = bm_create_context();
     }
-    
+
     // Register cleanup handler
     Py_AtExit(bmcapture_module_free);
 
